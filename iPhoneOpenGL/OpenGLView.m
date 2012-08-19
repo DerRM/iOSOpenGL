@@ -104,7 +104,7 @@
     
     glViewport(0, 0, self.frame.size.width, self.frame.size.height);
     
-    float ratio = self.frame.size.height / self.frame.size.width;
+    float ratio = self.frame.size.width / self.frame.size.height;
     Matrix4* projection = [Matrix4 frustumWithLeft:-ratio Right:ratio Top:1.0f Bottom:-1.0f Near:1.0f Far:1000.0f];
     
     Matrix4* lightModelMatrix = [[Matrix4 alloc] initAsIdentity];
@@ -114,9 +114,10 @@
     Vector4* lightPosInEyeSpace = [Matrix4 multiplyMatrix:mVMatrix WithVector:lightPosInWorldSpace];
     
     mModelMatrix = [[Matrix4 alloc] initAsIdentity];
-    mModelMatrix = [Matrix4 translationMatrix: mModelMatrix WithX:0.0f Y:-3.0f Z:-5.5f];
+    mModelMatrix = [Matrix4 translationMatrix: mModelMatrix WithX:0.0f Y:-5.0f Z:-5.5f];
     
-    mCurrentRotation += displayLink.duration * 30;
+    //mCurrentRotation += displayLink.duration * 30;
+    mCurrentRotation = -90.0f;
     //modelView = [Matrix4 multiply:modelView With:[Matrix4 rotateByYXZwithX:mCurrentRotation Y:0 Z:0]];
     
     mRotationMatrix = [Matrix4 rotateByYXZwithX:mCurrentRotation Y:0.0f Z:0.0f];

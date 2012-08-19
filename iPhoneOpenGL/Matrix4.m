@@ -161,8 +161,8 @@
 + (Matrix4*)lookAtEye:(Vector3 *)eyeVec CenterVec:(Vector3 *)centerVec UpVec:(Vector3 *)upVec {
     
     Vector3* fNorm = [Vector3 normalizeVector:[Vector3 subVector1:centerVec FromVector2:eyeVec]];
-    Vector3* upNorm = [Vector3 normalizeVector:upVec];
-    Vector3* sNorm = [Vector3 normalizeVector:[Vector3 crossProductVector1:fNorm Vector2:upNorm]];
+    //Vector3* upNorm = [Vector3 normalizeVector:upVec];
+    Vector3* sNorm = [Vector3 normalizeVector:[Vector3 crossProductVector1:fNorm Vector2:upVec]];
     Vector3* uNorm = [Vector3 normalizeVector:[Vector3 crossProductVector1:sNorm Vector2:fNorm]];
     
     Matrix4* lookAt = [[Matrix4 alloc] initAsIdentity];
