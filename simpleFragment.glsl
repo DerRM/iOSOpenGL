@@ -1,6 +1,20 @@
+precision mediump float;
+
+uniform vec3 uLightPos;
+
 varying lowp vec4 vDestinationColor;
+varying vec3 vPosition;
+varying vec3 vNormal;
 
 void main()
 {
-    gl_FragColor = vDestinationColor;
+    float distance = length(uLightPos - vPosition);
+    
+    vec3 lightVector = normalize(uLightPos - vPosition);
+    
+    float diffuse = max(dot(vNormal, lightVector), 0.0);
+    diffuse = diffuse * (1.0 / distance);
+    diffuse = diffuse + 0.2;
+    
+    gl_FragColor = diffuse * vDestinationColor;
 }

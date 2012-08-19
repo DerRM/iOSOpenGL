@@ -17,10 +17,23 @@
 - (id)init {
     self = [super init];
     
-    mX = 0.0f;
-    mY = 0.0f;
-    mZ = 0.0f;
+    if (self) {
+        mX = 0.0f;
+        mY = 0.0f;
+        mZ = 0.0f;
+    }
     
+    return self;
+}
+
+- (id)initWithX:(float)x Y:(float)y Z:(float)z {
+    self = [super init];
+    
+    if (self) {
+        mX = x;
+        mY = y;
+        mZ = z;
+    }
     return self;
 }
 
@@ -34,7 +47,7 @@
     return vec;
 }
 
-+ (Vector3*)subVector2:(Vector3 *)vec1 FromVector2:(Vector3 *)vec2 {
++ (Vector3*)subVector1:(Vector3 *)vec1 FromVector2:(Vector3 *)vec2 {
     Vector3* vec = [[Vector3 alloc] init];
     
     vec.x = vec1.x - vec2.x;

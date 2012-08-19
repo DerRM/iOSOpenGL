@@ -10,6 +10,7 @@
 		5F4C7AFE15E0FBED008467E8 /* Vector3.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7AFD15E0FBED008467E8 /* Vector3.m */; };
 		5F4C7B0215E113A2008467E8 /* Matrix3.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7B0115E113A2008467E8 /* Matrix3.m */; };
 		5F4C7B0515E113AE008467E8 /* Matrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7B0415E113AE008467E8 /* Matrix4.m */; };
+		5F4C7B0E15E1445C008467E8 /* Vector4.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7B0D15E1445C008467E8 /* Vector4.m */; };
 		5F995CFB15D91CF30021742F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F995CFA15D91CF30021742F /* UIKit.framework */; };
 		5F995CFD15D91CF30021742F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F995CFC15D91CF30021742F /* Foundation.framework */; };
 		5F995CFF15D91CF30021742F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F995CFE15D91CF30021742F /* CoreGraphics.framework */; };
@@ -46,6 +47,9 @@
 		5F4C7B0115E113A2008467E8 /* Matrix3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix3.m; sourceTree = "<group>"; };
 		5F4C7B0315E113AE008467E8 /* Matrix4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix4.h; sourceTree = "<group>"; };
 		5F4C7B0415E113AE008467E8 /* Matrix4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Matrix4.m; sourceTree = "<group>"; };
+		5F4C7B0A15E1324A008467E8 /* Math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Math.h; sourceTree = "<group>"; };
+		5F4C7B0C15E1445C008467E8 /* Vector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector4.h; sourceTree = "<group>"; };
+		5F4C7B0D15E1445C008467E8 /* Vector4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vector4.m; sourceTree = "<group>"; };
 		5F995CF615D91CF30021742F /* iPhoneOpenGL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPhoneOpenGL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F995CFA15D91CF30021742F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5F995CFC15D91CF30021742F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -144,6 +148,9 @@
 				5F4C7B0115E113A2008467E8 /* Matrix3.m */,
 				5F4C7B0315E113AE008467E8 /* Matrix4.h */,
 				5F4C7B0415E113AE008467E8 /* Matrix4.m */,
+				5F4C7B0A15E1324A008467E8 /* Math.h */,
+				5F4C7B0C15E1445C008467E8 /* Vector4.h */,
+				5F4C7B0D15E1445C008467E8 /* Vector4.m */,
 			);
 			path = iPhoneOpenGL;
 			sourceTree = "<group>";
@@ -303,6 +310,7 @@
 				5F4C7AFE15E0FBED008467E8 /* Vector3.m in Sources */,
 				5F4C7B0215E113A2008467E8 /* Matrix3.m in Sources */,
 				5F4C7B0515E113AE008467E8 /* Matrix4.m in Sources */,
+				5F4C7B0E15E1445C008467E8 /* Vector4.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
