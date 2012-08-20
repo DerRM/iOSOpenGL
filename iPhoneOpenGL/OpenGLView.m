@@ -108,7 +108,7 @@
     Matrix4* projection = [Matrix4 frustumWithLeft:-ratio Right:ratio Top:1.0f Bottom:-1.0f Near:1.0f Far:1000.0f];
     
     Matrix4* lightModelMatrix = [[Matrix4 alloc] initAsIdentity];
-    lightModelMatrix = [Matrix4 translationMatrix: lightModelMatrix WithX:0.0f Y:0.0f Z:-5.0f];
+    lightModelMatrix = [Matrix4 translationMatrix: lightModelMatrix WithX:0.0f Y:0.0f Z:-3.0f];
     mLightPosInModelSpace = [[Vector4 alloc] initWithX:0.0f Y:0.0f Z:0.0f W:1.0f];
     Vector4* lightPosInWorldSpace = [Matrix4 multiplyMatrix:lightModelMatrix WithVector:mLightPosInModelSpace];
     Vector4* lightPosInEyeSpace = [Matrix4 multiplyMatrix:mVMatrix WithVector:lightPosInWorldSpace];
@@ -367,7 +367,7 @@
                 
         NSMutableArray* indexArray = [[NSMutableArray alloc] init];
         
-        for (int j = 0; j < numPosIndices[i]; j++) {
+        for (int j = 0; j < numPosIndices[i] * 3; j++) {
             GLushort positionIndex = posIndices[i][j];
             GLushort normalIndex = normalIndices[i][j];
             GLushort texCoordIndex = texCoordIndices[i][j];
@@ -403,12 +403,14 @@
             indices[i][indicesCount] = [object shortValue];
             indicesCount++;
         }
+        
+        printf("Indices group %d: %d\n", i, indicesCount);
     }
     
     int length = [keyArray count];
-    newVertices = (Vertex*) malloc(length * 3 * sizeof(Vertex));
-    newNormals = (Normal*) malloc(length * 3 * sizeof(Normal));
-    newTexCoords = (TexCoord*) malloc(length * 2 * sizeof(TexCoord));
+    newVertices = (Vertex*) malloc(length * sizeof(Vertex));
+    newNormals = (Normal*) malloc(length * sizeof(Normal));
+    newTexCoords = (TexCoord*) malloc(length * sizeof(TexCoord));
     
     NSEnumerator* enu = [keyArray objectEnumerator];
     
