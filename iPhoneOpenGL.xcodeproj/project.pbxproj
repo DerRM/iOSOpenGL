@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F45BD3515E2A58B00DC3B2F /* boy_10.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F45BD3415E2A58B00DC3B2F /* boy_10.png */; };
 		5F4C7AFE15E0FBED008467E8 /* Vector3.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7AFD15E0FBED008467E8 /* Vector3.m */; };
 		5F4C7B0215E113A2008467E8 /* Matrix3.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7B0115E113A2008467E8 /* Matrix3.m */; };
 		5F4C7B0515E113AE008467E8 /* Matrix4.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4C7B0415E113AE008467E8 /* Matrix4.m */; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F45BD3415E2A58B00DC3B2F /* boy_10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boy_10.png; sourceTree = "<group>"; };
 		5F4C7AFC15E0FBED008467E8 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector3.h; sourceTree = "<group>"; };
 		5F4C7AFD15E0FBED008467E8 /* Vector3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vector3.m; sourceTree = "<group>"; };
 		5F4C7B0015E113A2008467E8 /* Matrix3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix3.h; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 		5F995D2A15D91D210021742F /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				5F45BD3415E2A58B00DC3B2F /* boy_10.png */,
 				5F53F90C15E22C01007F1818 /* Test.scf */,
 				5FFB517115D942DD000BEA0F /* simpleVertex.glsl */,
 				5FFB517315D94354000BEA0F /* simpleFragment.glsl */,
@@ -276,6 +279,7 @@
 				5FFB517515D94BD2000BEA0F /* simpleVertex.glsl in Resources */,
 				5FFB517615D94BD4000BEA0F /* simpleFragment.glsl in Resources */,
 				5F53F90E15E22C17007F1818 /* Test.scf in Resources */,
+				5F45BD3515E2A58B00DC3B2F /* boy_10.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

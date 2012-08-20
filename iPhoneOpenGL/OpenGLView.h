@@ -35,6 +35,8 @@ typedef struct {
     GLuint mMVPMatrixHandle;
     GLuint mMVMatrixHandle;
     GLuint mLightPosHandle;
+    GLuint mTexCoordHandle;
+    GLuint mTextureUniform;
     float mCurrentRotation;
     GLuint mDepthRenderBuffer;
     unsigned int numVertices;
@@ -62,7 +64,9 @@ typedef struct {
     Vector4* mLightPosInModelSpace;
     GLuint mPositionBuffer;
     GLuint mNormalBuffer;
+    GLuint mTexCoordBuffer;
     GLuint* mIndexBuffer;
+    GLuint mTexture;
 }
 
 @end

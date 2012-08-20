@@ -137,6 +137,10 @@
     float color[] = {1, 0, 0, 0};
     glUniform4fv(mColorHandle, 1, color);
     
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+    glUniform1i(mTextureUniform, 0);
+    
     glBindBuffer(GL_ARRAY_BUFFER, mPositionBuffer);
     glVertexAttribPointer(mPositionHandle, 3, GL_FLOAT, false, sizeof(Vertex), 0);
     glEnableVertexAttribArray(mPositionHandle);
@@ -144,6 +148,10 @@
     glBindBuffer(GL_ARRAY_BUFFER, mNormalBuffer);
     glVertexAttribPointer(mNormalHandle, 3, GL_FLOAT, false, sizeof(Normal), 0);
     glEnableVertexAttribArray(mNormalHandle);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, mTexCoordBuffer);
+    glVertexAttribPointer(mTexCoordHandle, 2, GL_FLOAT, false, sizeof(TexCoord), 0);
+    glEnableVertexAttribArray(mTexCoordHandle);
 
     for (int i = 0; i < numTriangleGroups; i++) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer[i]);
@@ -215,11 +223,14 @@
     
     mNormalHandle = glGetAttribLocation(programHandle, "aNormal");
     //glEnableVertexAttribArray(mNormalHandle);
+    
+    mTexCoordHandle = glGetAttribLocation(programHandle, "aTexCoord");
 
     mColorHandle = glGetUniformLocation(programHandle, "uSourceColor");
     mMVPMatrixHandle = glGetUniformLocation(programHandle, "uMVPMatrix");
     mMVMatrixHandle = glGetUniformLocation(programHandle, "uMVMatrix");
     mLightPosHandle = glGetUniformLocation(programHandle, "uLightPos");
+    mTextureUniform = glGetUniformLocation(programHandle, "uTexture");
 }
 
 - (char) readCharFromFile: (NSFileHandle*)file {
@@ -428,6 +439,8 @@
         newNormals[numNewVertices] = Normals[normalIndex];
         newTexCoords[numNewVertices] = TexCoords[texCoordIndex];
         
+        //printf("TexCoord: %f %f", newTexCoords[numNewVertices].Coord[0], newTexCoords[numNewVertices].Coord[1]);
+        
         numNewVertices++;
     }
 }
@@ -437,12 +450,15 @@
     glBindBuffer(GL_ARRAY_BUFFER, mPositionBuffer);
     glBufferData(GL_ARRAY_BUFFER, numNewVertices * 3 * sizeof(float), newVertices, GL_STATIC_DRAW);
     
-    
     //GLuint normalBuffer;
     glGenBuffers(1, &mNormalBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mNormalBuffer);
     glBufferData(GL_ARRAY_BUFFER, numNewVertices * 3 * sizeof(float), newNormals, GL_STATIC_DRAW);
     //printf("Size of Vertices: %d \n", sizeof(Vertices));
+    
+    glGenBuffers(1, &mTexCoordBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, mTexCoordBuffer);
+    glBufferData(GL_ARRAY_BUFFER, numNewVertices * 2 * sizeof(float), newTexCoords, GL_STATIC_DRAW);
     
     mIndexBuffer = (GLuint*) malloc(numTriangleGroups * sizeof(GLuint));
     glGenBuffers(numTriangleGroups, mIndexBuffer);
@@ -456,6 +472,43 @@
 - (void)setupDisplayLink {
     CADisplayLink* displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render:)];
     [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+}
+
+- (GLuint)setupTexture {
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"boy_10" ofType:@"png"];
+    NSData* texData = [[NSData alloc] initWithContentsOfFile:path];
+    UIImage* spriteImage = [[UIImage alloc] initWithData:texData];
+    if (spriteImage == nil) {
+        NSLog(@"Failed to load image %@", path);
+        exit(1);
+    }
+    
+    GLuint width = CGImageGetWidth(spriteImage.CGImage);
+    GLuint height = CGImageGetHeight(spriteImage.CGImage);
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    void* imageData = malloc(height * width * 4);
+    CGContextRef context = CGBitmapContextCreate(imageData, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
+    
+    CGContextTranslateCTM(context, 0, height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    CGColorSpaceRelease(colorSpace);
+    CGContextClearRect(context, CGRectMake(0, 0, width, height));
+    CGContextTranslateCTM(context, 0, height - height);
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), spriteImage.CGImage);
+    
+    GLuint texName;
+    glGenTextures(1, &texName);
+    glBindTexture(GL_TEXTURE_2D, texName);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+    free(imageData);
+    [spriteImage release];
+    [texData release];
+    
+    return texName;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -472,6 +525,8 @@
         [self loadModel];
         [self setupVBOs];
         [self setupDisplayLink];
+        
+        mTexture = [self setupTexture];
     }
     
     return self;
