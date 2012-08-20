@@ -114,13 +114,13 @@
     Vector4* lightPosInEyeSpace = [Matrix4 multiplyMatrix:mVMatrix WithVector:lightPosInWorldSpace];
     
     mModelMatrix = [[Matrix4 alloc] initAsIdentity];
-    mModelMatrix = [Matrix4 translationMatrix: mModelMatrix WithX:0.0f Y:-5.0f Z:-5.5f];
+    mModelMatrix = [Matrix4 translationMatrix: mModelMatrix WithX:0.0f Y:-4.0f Z:-5.5f];
     
-    //mCurrentRotation += displayLink.duration * 30;
-    mCurrentRotation = -90.0f;
+    mCurrentRotation += displayLink.duration * 30;
+    //mCurrentRotation = -90.0f;
     //modelView = [Matrix4 multiply:modelView With:[Matrix4 rotateByYXZwithX:mCurrentRotation Y:0 Z:0]];
     
-    mRotationMatrix = [Matrix4 rotateByYXZwithX:mCurrentRotation Y:0.0f Z:0.0f];
+    mRotationMatrix = [Matrix4 rotateByYXZwithX:-90.0f Y:mCurrentRotation Z:0.0f];
     
     mModelMatrix = [Matrix4 multiply:mModelMatrix With:mRotationMatrix];
     
@@ -145,8 +145,10 @@
     glVertexAttribPointer(mNormalHandle, 3, GL_FLOAT, false, sizeof(Normal), 0);
     glEnableVertexAttribArray(mNormalHandle);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
-    glDrawElements(GL_TRIANGLES, numIndices * 3, GL_UNSIGNED_SHORT, 0);
+    for (int i = 0; i < numTriangleGroups; i++) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer[i]);
+        glDrawElements(GL_TRIANGLES, numIndices[i], GL_UNSIGNED_SHORT, 0);
+    }
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -253,10 +255,17 @@
     }
     
     printf("\n");
-    
+        
     for (int i = 0; i < 7; i++) {
-        printf("%i", [self readIntFromFile:file]);
-        printf("\n");
+        
+        if (i == 4) {
+            numTriangleGroups = [self readIntFromFile:file];
+            printf("No Triangle Group: %i", numTriangleGroups);
+            printf("\n");
+        } else {
+            printf("%i", [self readIntFromFile:file]);
+            printf("\n");
+        }
     }
     
     unsigned int length = [self readIntFromFile:file];
@@ -289,47 +298,157 @@
         Normals[i].Direction[1] = y;
         Normals[i].Direction[2] = z;
     }
+    
+    length = [self readIntFromFile:file];
+    numTexCoords = length;
+    
+    TexCoords = (TexCoord*) malloc(length * sizeof(TexCoord));
+    printf("Num TexCoords: %d\n", length);
+    
+    for (int i = 0; i < length; i++) {
+        float u = [self readFloatFromFile:file];
+        float v = [self readFloatFromFile:file];
+        TexCoords[i].Coord[0] = u;
+        TexCoords[i].Coord[1] = v;
+    }
         
-    for (int i = 0; i < 4; i++) {
+    posIndices = (GLushort**) malloc(numTriangleGroups * sizeof(GLushort*));
+    numPosIndices = (unsigned int*) malloc(numTriangleGroups * sizeof(unsigned int));
+    
+    normalIndices = (GLushort**) malloc(numTriangleGroups * sizeof(GLushort*));
+    numNormalIndices = (unsigned int*) malloc(numTriangleGroups * sizeof(unsigned int));
+    
+    texCoordIndices = (GLushort**) malloc(numTriangleGroups * sizeof(GLushort*));
+    numTexCoordIndices = (unsigned int*) malloc(numTriangleGroups * sizeof(unsigned int));
+    
+    for (int i = 0; i < numTriangleGroups; i++) {
         length = [self readIntFromFile:file];
         printf("Num Indices in Group %d: %d\n", i, length);
-        numIndices = length;
         
-        Indices = (GLushort*) malloc(length * 3 * sizeof(GLushort));
+        numPosIndices[i] = length;
+        posIndices[i] = (GLushort*) malloc(length * 3 * sizeof(GLushort));
         
-        int index = 0;
+        numNormalIndices[i] = length;
+        normalIndices[i] = (GLushort*) malloc(length * 3 * sizeof(GLushort));
         
-        for (int j = 0; j < length * 6; j += 6) {
-            Indices[index] = [self readShortFromFile:file];
-            Indices[index + 1] = [self readShortFromFile:file];
-            Indices[index + 2] = [self readShortFromFile:file];
+        numTexCoordIndices[i] = length;
+        texCoordIndices[i] = (GLushort*) malloc(length * 3 * sizeof(GLushort));
+        
+        for (int j = 0; j < length; j++) {
+            int index = j * 3;
             
-            index += 3;
+            posIndices[i][index] = [self readShortFromFile:file];
+            posIndices[i][index + 1] = [self readShortFromFile:file];
+            posIndices[i][index + 2] = [self readShortFromFile:file];
             
-            [self readShortFromFile:file];
-            [self readShortFromFile:file];
-            [self readShortFromFile:file];
+            normalIndices[i][index] = [self readShortFromFile:file];
+            normalIndices[i][index + 1] = [self readShortFromFile:file];
+            normalIndices[i][index + 2] = [self readShortFromFile:file];
+            
+            texCoordIndices[i][index] = [self readShortFromFile:file];
+            texCoordIndices[i][index + 1] = [self readShortFromFile:file];
+            texCoordIndices[i][index + 2] = [self readShortFromFile:file];
+        }
+    }
+    
+    [self rearrangeIndices];
+}
+
+- (void) rearrangeIndices {
+    NSMutableDictionary* dictionary = [[NSMutableDictionary alloc] init];
+    NSMutableArray* keyArray = [[NSMutableArray alloc] init];
+    
+    int index = 0;
+    
+    indices = (GLushort**) malloc(numTriangleGroups * sizeof(GLushort*));
+    numIndices = (unsigned int*) malloc(numTriangleGroups * sizeof(unsigned int));
+    
+    for (int i = 0; i < numTriangleGroups; i++) {
+                
+        NSMutableArray* indexArray = [[NSMutableArray alloc] init];
+        
+        for (int j = 0; j < numPosIndices[i]; j++) {
+            GLushort positionIndex = posIndices[i][j];
+            GLushort normalIndex = normalIndices[i][j];
+            GLushort texCoordIndex = texCoordIndices[i][j];
+            
+            NSString* key = [NSString stringWithFormat:@"%d.%d.%d", positionIndex, normalIndex, texCoordIndex];
+            
+            if ([dictionary objectForKey:key] == nil) {
+               // NSLog(@"key doesn't exists: %@", key);
+                Vertex3* vertex = [[Vertex3 alloc] init];
+                vertex.index = index;
+                vertex.posIndex = positionIndex;
+                vertex.normalIndex = normalIndex;
+                vertex.texCoordIndex = texCoordIndex;
+                [dictionary setObject:vertex forKey:key];
+                [keyArray addObject:key];
+                [indexArray addObject:[[NSNumber alloc] initWithInt:index]];
+                index++;
+            } else {
+               // NSLog(@"key exists: %@", key);
+                Vertex3* vertex = (Vertex3*)[dictionary objectForKey:key];
+                [indexArray addObject:[[NSNumber alloc] initWithInt:vertex.index]];
+            }
         }
         
-        //[indexArray addObject:Indices];
+        indices[i] = (GLushort*) malloc([indexArray count] * sizeof(GLushort));
+        numIndices[i] = [indexArray count];
+        
+        NSEnumerator* e = [indexArray objectEnumerator];
+        NSNumber* object;
+        int indicesCount = 0;
+        while (object = [e nextObject]) {
+            //NSLog(@"Index: %@", object);
+            indices[i][indicesCount] = [object shortValue];
+            indicesCount++;
+        }
+    }
+    
+    int length = [keyArray count];
+    newVertices = (Vertex*) malloc(length * 3 * sizeof(Vertex));
+    newNormals = (Normal*) malloc(length * 3 * sizeof(Normal));
+    newTexCoords = (TexCoord*) malloc(length * 2 * sizeof(TexCoord));
+    
+    NSEnumerator* enu = [keyArray objectEnumerator];
+    
+    numNewVertices = 0;
+    NSString* key;
+    while (key = [enu nextObject]) {
+        Vertex3* vertex3 = [dictionary objectForKey:key];
+        GLushort positionIndex = vertex3.posIndex;
+        GLushort normalIndex = vertex3.normalIndex;
+        GLushort texCoordIndex = vertex3.texCoordIndex;
+        
+        //NSLog(@"Pos: %d Normal: %d TexCoord: %d", positionIndex, normalIndex, texCoordIndex);
+        
+        newVertices[numNewVertices] = Vertices[positionIndex];
+        newNormals[numNewVertices] = Normals[normalIndex];
+        newTexCoords[numNewVertices] = TexCoords[texCoordIndex];
+        
+        numNewVertices++;
     }
 }
 
 - (void) setupVBOs {
     glGenBuffers(1, &mPositionBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mPositionBuffer);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * 3 * sizeof(float), Vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numNewVertices * 3 * sizeof(float), newVertices, GL_STATIC_DRAW);
     
     
     //GLuint normalBuffer;
     glGenBuffers(1, &mNormalBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mNormalBuffer);
-    glBufferData(GL_ARRAY_BUFFER, numNormals * 3 * sizeof(float), Normals, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numNewVertices * 3 * sizeof(float), newNormals, GL_STATIC_DRAW);
     //printf("Size of Vertices: %d \n", sizeof(Vertices));
     
-    glGenBuffers(1, &mIndexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * 3 * sizeof(GLushort), Indices, GL_STATIC_DRAW);
+    mIndexBuffer = (GLuint*) malloc(numTriangleGroups * sizeof(GLuint));
+    glGenBuffers(numTriangleGroups, mIndexBuffer);
+    
+    for (int i = 0; i < numTriangleGroups; i++){
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer[i]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices[i] * sizeof(GLushort), indices[i], GL_STATIC_DRAW);
+    }
 }
 
 - (void)setupDisplayLink {

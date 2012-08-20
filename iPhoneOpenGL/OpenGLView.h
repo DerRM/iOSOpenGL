@@ -21,6 +21,10 @@ typedef struct {
     float Direction[3];
 } Normal;
 
+typedef struct {
+    float Coord[2];
+} TexCoord;
+
 @interface OpenGLView : UIView {
     CAEAGLLayer* mEaglLayer;
     EAGLContext* mContext;
@@ -35,17 +39,30 @@ typedef struct {
     GLuint mDepthRenderBuffer;
     unsigned int numVertices;
     unsigned int numNormals;
+    unsigned int numTexCoords;
+    unsigned int numTriangleGroups;
     Vertex* Vertices;
     Normal* Normals;
-    unsigned int numIndices;
-    GLushort* Indices;
+    TexCoord* TexCoords;
+    Vertex* newVertices;
+    Normal* newNormals;
+    TexCoord* newTexCoords;
+    unsigned int numNewVertices;
+    unsigned int* numPosIndices;
+    unsigned int* numNormalIndices;
+    unsigned int* numTexCoordIndices;
+    unsigned int* numIndices;
+    GLushort** posIndices;
+    GLushort** normalIndices;
+    GLushort** texCoordIndices;
+    GLushort** indices;
     Matrix4* mVMatrix;
     Matrix4* mRotationMatrix;
     Matrix4* mModelMatrix;
     Vector4* mLightPosInModelSpace;
     GLuint mPositionBuffer;
     GLuint mNormalBuffer;
-    GLuint mIndexBuffer;
+    GLuint* mIndexBuffer;
 }
 
 @end

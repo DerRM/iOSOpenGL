@@ -13,5 +13,6 @@
 #import "Vector4.h"
 #import "Matrix3.h"
 #import "Matrix4.h"
+#import "Vertex3.h"
 
 #endif
